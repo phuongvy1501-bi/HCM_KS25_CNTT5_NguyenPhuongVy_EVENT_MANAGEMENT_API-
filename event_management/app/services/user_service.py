@@ -11,6 +11,7 @@ def get_users(
     skip: int = 0,
     limit: int = 20,
 ) -> list[User]:
+    """Trả về danh sách user, hỗ trợ search theo tên/email và filter trạng thái."""
     query = db.query(User)
 
     if search:

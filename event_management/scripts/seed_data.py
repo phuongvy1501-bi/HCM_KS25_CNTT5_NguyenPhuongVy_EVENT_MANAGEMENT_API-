@@ -1,3 +1,7 @@
+"""
+Script seed dữ liệu mẫu: user, event, event_task phục vụ test/demo.
+Chạy: python scripts/seed_data.py
+"""
 import sys
 import os
 

@@ -19,8 +19,3 @@ class RegisterRequest(BaseModel):
         if not v.strip():
             raise ValueError("Họ tên không được để trống")
         return v.strip()
-
-
-class LoginRequest(BaseModel):
-    email: EmailStr
-    password: str

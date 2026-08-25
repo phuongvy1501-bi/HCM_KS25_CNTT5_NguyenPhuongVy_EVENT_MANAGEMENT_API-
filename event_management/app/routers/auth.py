@@ -1,34 +1,44 @@
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, status
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
 from app.db.database import get_db
-from app.schemas.auth import RegisterRequest, LoginRequest
+from app.schemas.auth import RegisterRequest
 from app.schemas.user import UserResponse
-from app.schemas.token import TokenResponse, AccessTokenResponse, RefreshTokenRequest
+from app.schemas.token import TokenResponse
 from app.services import auth_service
-from app.core.limiter import limiter
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 
-@router.post("/register", response_model=UserResponse, status_code=201)
+@router.post(
+    "/register",
+    response_model=UserResponse,
+    status_code=status.HTTP_201_CREATED,
+    summary="Đăng ký tài khoản mới",
+    description="Tạo tài khoản mới với role mặc định USER. Email phải chưa tồn tại, "
+                 "password tối thiểu 6 ký tự. Mật khẩu được hash bằng bcrypt trước khi lưu.",
+)
 def register(data: RegisterRequest, db: Session = Depends(get_db)):
-    """dky tài khoản mới"""
     user = auth_service.register_user(db, data)
     return user
 
 
-@router.post("/login", response_model=TokenResponse)
-@limiter.limit("5/minute")  
-def login(request: Request, data: LoginRequest, db: Session = Depends(get_db)):
-    """Đăng nhập, trả về access_token + refresh_token."""
-    user = auth_service.authenticate_user(db, data)
-    access_token, refresh_token = auth_service.issue_token_pair(user)
-    return TokenResponse(access_token=access_token, refresh_token=refresh_token)
-
-
-@router.post("/refresh", response_model=AccessTokenResponse)
-def refresh(data: RefreshTokenRequest, db: Session = Depends(get_db)):
-    """Cấp lại access token mới từ refresh token còn hiệu lực."""
-    new_access_token = auth_service.refresh_access_token(db, data.refresh_token)
-    return AccessTokenResponse(access_token=new_access_token)
+@router.post(
+    "/login",
+    response_model=TokenResponse,
+    summary="Đăng nhập, nhận access token",
+    description="Sử dụng chuẩn OAuth2 Password Flow — gửi dữ liệu dạng "
+                 "x-www-form-urlencoded với 2 field `username` (chính là email) và "
+                 "`password`. Đây là format bắt buộc để nút Authorize trên Swagger UI "
+                 "hoạt động đúng.",
+)
+def login(
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    db: Session = Depends(get_db),
+):
+    # OAuth2PasswordRequestForm luôn đặt tên field là "username",
+    # nhưng ở hệ thống này ta dùng chính username đó làm email đăng nhập.
+    user = auth_service.authenticate_user(db, email=form_data.username, password=form_data.password)
+    access_token = auth_service.issue_access_token(user)
+    return TokenResponse(access_token=access_token)

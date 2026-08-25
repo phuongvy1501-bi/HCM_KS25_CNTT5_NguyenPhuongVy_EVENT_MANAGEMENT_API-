@@ -2,6 +2,9 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
+    """
+    Đọc và quản lý các biến cấu hình của ứng dụng từ file .env
+    """
 
     # App
     APP_NAME: str = "Event Management API"
@@ -14,7 +17,6 @@ class Settings(BaseSettings):
     SECRET_KEY: str
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
-    REFRESH_TOKEN_EXPIRE_DAYS: int = 7
 
     model_config = SettingsConfigDict(
         env_file=".env",

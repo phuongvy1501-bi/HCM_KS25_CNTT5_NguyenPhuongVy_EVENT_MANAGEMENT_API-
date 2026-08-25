@@ -8,6 +8,7 @@ from app.core.security import decode_token
 from app.models.user import User, UserRole
 from app.core.exceptions import UnauthorizedException, ForbiddenException
 
+# tokenUrl chỉ dùng để hiển thị nút "Authorize" trên Swagger UI
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
 
@@ -15,7 +16,10 @@ def get_current_user(
     token: str = Depends(oauth2_scheme),
     db: Session = Depends(get_db),
 ) -> User:
-    
+    """
+    Dependency trung tâm: giải mã JWT từ header Authorization: Bearer <token>,
+    load user tương ứng từ DB, dùng cho mọi endpoint cần đăng nhập.
+    """
     try:
         payload = decode_token(token)
     except JWTError:
@@ -39,7 +43,10 @@ def get_current_user(
 
 
 def require_roles(*allowed_roles: UserRole):
-    
+    """
+    Factory tạo dependency kiểm tra role.
+    Dùng: Depends(require_roles(UserRole.ADMIN))
+    """
     def role_checker(current_user: User = Depends(get_current_user)) -> User:
         if current_user.role not in allowed_roles:
             raise ForbiddenException("Bạn không có quyền thực hiện thao tác này")

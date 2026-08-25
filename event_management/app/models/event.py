@@ -1,7 +1,7 @@
 import enum
 from datetime import datetime
 
-from sqlalchemy import String, Text, ForeignKey, DateTime, Enum, UniqueConstraint, Boolean
+from sqlalchemy import String, Text, ForeignKey, DateTime, Enum, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 
@@ -22,7 +22,6 @@ class Event(Base):
     owner_id: Mapped[int] = mapped_column(
         ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
-    is_deleted: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime, nullable=False, server_default=func.now()
     )
