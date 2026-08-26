@@ -7,23 +7,27 @@ from app.core.exceptions import (
     app_exception_handler,
     generic_exception_handler,
 )
-from app.routers import auth, users, event, event_task
+from app.routers import auth, users, event as event_router, event_task
+from app.db.database import engine
+from app.models import user, event as event_model
 
+# 1. Khởi tạo app trước tiên
 app = FastAPI(
     title=settings.APP_NAME,
-    description=(
-        "API quản lý sự kiện: đăng ký/đăng nhập (JWT), quản lý sự kiện, "
-        "thành viên sự kiện và công việc sự kiện (event tasks) với phân "
-        "quyền theo vai trò Owner/Member/Assignee."
-    ),
+    description="",
     version="1.0.0",
     debug=settings.DEBUG,
 )
 
+# 2. Sự kiện startup gắn vào app
+@app.on_event("startup")
+def startup_event():
+    user.Base.metadata.create_all(bind=engine)
+
 # ===== Middleware =====
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],       # mở toàn bộ khi dev, sẽ siết lại ở production
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -36,7 +40,7 @@ app.add_exception_handler(Exception, generic_exception_handler)
 # ===== Routers =====
 app.include_router(auth.router)
 app.include_router(users.router)
-app.include_router(event.router)
+app.include_router(event_router.router)
 app.include_router(event_task.event_tasks_under_event_router)
 app.include_router(event_task.event_tasks_router)
 
@@ -45,8 +49,7 @@ app.include_router(event_task.event_tasks_router)
     "/health",
     tags=["Health"],
     summary="Kiểm tra tình trạng server",
-    description="Endpoint đơn giản để kiểm tra server còn hoạt động, dùng cho "
-                 "monitoring hoặc demo nhanh.",
+    description="Endpoint đơn giản để kiểm tra server còn hoạt động.",
 )
 def health_check():
     return {

@@ -38,7 +38,6 @@ def login(
     db: Session = Depends(get_db),
 ):
     # OAuth2PasswordRequestForm luôn đặt tên field là "username",
-    # nhưng ở hệ thống này ta dùng chính username đó làm email đăng nhập.
     user = auth_service.authenticate_user(db, email=form_data.username, password=form_data.password)
     access_token = auth_service.issue_access_token(user)
     return TokenResponse(access_token=access_token)

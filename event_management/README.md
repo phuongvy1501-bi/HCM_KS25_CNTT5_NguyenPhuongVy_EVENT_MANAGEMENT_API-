@@ -144,7 +144,6 @@ event_management/
 
 ## 9. Ghi chú so với bản đầy đủ
 
-Các phần sau **không có** trong bản này vì thuộc nhóm "Không bắt buộc":
 
 - Không có `POST /auth/refresh` — token hết hạn phải đăng nhập lại.
 - Không có rate limit chống brute-force cho `/auth/login`.

@@ -40,7 +40,7 @@ def create_event_task(
     summary="Danh sách công việc của sự kiện",
     description="Trả về công việc thuộc đúng sự kiện này, không lộ công việc của sự "
                  "kiện khác. Hỗ trợ filter theo status/priority/assignee, search theo "
-                 "tiêu đề, phân trang bằng skip/limit, sắp xếp theo created_at hoặc due_date.",
+                 "tiêu đề, phân trang bằng skb cip/limit, sắp xếp theo created_at hoặc due_date.",
 )
 def list_event_tasks(
     event_id: int,

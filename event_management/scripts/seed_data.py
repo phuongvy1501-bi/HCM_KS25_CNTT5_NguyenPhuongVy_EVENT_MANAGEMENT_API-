@@ -1,7 +1,3 @@
-"""
-Script seed dữ liệu mẫu: user, event, event_task phục vụ test/demo.
-Chạy: python scripts/seed_data.py
-"""
 import sys
 import os
 
@@ -27,7 +23,7 @@ def seed():
             role=UserRole.ADMIN,
         )
         owner = User(
-            email="owner@example.com",
+            email="o wner@example.com",
             password_hash=hash_password("Owner@123"),
             full_name="Nguyễn Văn Owner",
             role=UserRole.USER,
