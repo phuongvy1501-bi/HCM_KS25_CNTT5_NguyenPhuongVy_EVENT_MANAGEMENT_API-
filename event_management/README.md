@@ -147,7 +147,6 @@ event_management/
 
 - Không có `POST /auth/refresh` — token hết hạn phải đăng nhập lại.
 - Không có rate limit chống brute-force cho `/auth/login`.
-- Không có script `seed_data.py` — DB trống sau khi tạo bảng, tự tạo dữ liệu qua API.
 - Không có Activity log (bảng `activity_logs`).
 - Không có Soft delete — `DELETE /events/{event_id}` xoá thật khỏi database, không thể khôi phục.
 - Không có Comment, Attachment cho Event Task.
